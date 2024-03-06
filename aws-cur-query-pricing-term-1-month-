@@ -1,0 +1,24 @@
+SELECT
+line_item_line_item_type,
+product_product_name,
+line_item_operation,
+line_item_line_item_description,
+line_item_resource_id,
+resource_tags_user_hostname,
+resource_tags_user_operating_system,
+pricing_term,
+product_instance_type,
+product_operating_system,
+line_item_usage_type,
+line_item_product_code,
+SUM("line_item_usage_amount") as "usage",
+SUM("line_item_unblended_cost") as "unblended_cost",
+SUM("pricing_public_on_demand_cost") as "public_OD_pricing_cost"
+FROM "athena_cur_report" 
+WHERE year(bill_billing_period_start_date) = 2024
+  AND month(bill_billing_period_start_date) = 01
+  AND line_item_line_item_type NOT IN ('Tax','Support','SavingsPlanNegation')
+  AND product_operating_system IN ('Linux','SUSE')
+
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
+ORDER by unblended_cost
